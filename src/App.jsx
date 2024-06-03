@@ -37,16 +37,16 @@ const App = () => {
   useEffect(() => {
     const handleKeyDown = (event) => {
       switch (event.key) {
-        case 'w':
+        case 'ArrowUp':
           setModelPosition(prevPosition => [prevPosition[0], prevPosition[1] - 0.5, prevPosition[2]]);
           break;
-        case 's':
+        case 'ArrowDown':
           setModelPosition(prevPosition => [prevPosition[0], prevPosition[1] + 0.5, prevPosition[2]]);
           break;
-        case 'a':
+        case 'ArrowLeft':
           setModelPosition(prevPosition => [prevPosition[0], prevPosition[1], prevPosition[2] - 0.5]);
           break;
-        case 'd':
+        case 'ArrowRight':
           setModelPosition(prevPosition => [prevPosition[0], prevPosition[1], prevPosition[2] + 0.5]);
           break;
         default:

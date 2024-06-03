@@ -13,10 +13,14 @@
       const [isArmSelected, setIsArmSelected] = useState(false);
       const [isBezierSelected, setIsBezierSelected] = useState(false);
       const [isOvalSelected, setIsOvalSelected] = useState(false);
+      const [isVienSelected, setIsVienSelected] = useState(false);
+      const [isBezierOvalSelected, setIsBezierOvalSelected] = useState(false);
       const [armPosition, setArmPosition] = useState([-14.301, 7.398, 9.125]);
       const [bezierPosition, setBezierPosition] =useState([-1.822, 7.935, -9.449]);
       const [leftOval, setLeftOval] = useState([-0.375, 7.657, -7.208]);
       const [rightOval, setRightOval] = useState([0.304, 7.612, -10.971]);
+      const [vienPosition, setVienPosition] = useState([0, 0,0]);
+      const[bezierOval, setBezierOval] = useState([-1.822, 7.935, -9.449]);
 
         useEffect(() => {
         if (isAnimating) {
@@ -47,11 +51,19 @@
       const handleOvalClick=()=>{
         setIsOvalSelected(true);
       }
+      const handleVienClick=()=>{
+        setIsVienSelected(true);
+      }
+      const handleBezierOvalClick=()=>{
+        setIsBezierOvalSelected(true);
+      }
 
       const handleMouseUp = ()=>{
         setIsArmSelected(false);
         setIsBezierSelected(false);
         setIsOvalSelected(false);
+        setIsVienSelected(false);
+        setIsBezierOvalSelected(false);
       }
 
 
@@ -60,6 +72,8 @@
         setBezierPosition([-1.822, 7.935, -9.449]);
         setLeftOval([-0.375, 7.657, -7.208])
         setRightOval([0.304, 7.612, -10.971])
+        setVienPosition([0,0,0]);
+        setBezierOval([-1.822, 7.935, -9.449]);
         actions['CircleAction.001'].stop();
         actions['NurbsPathAction'].stop();
         actions['Plane.001Action'].stop();
@@ -75,6 +89,8 @@
         setBezierPosition([-1.822, 7.935, -9.449]);
         setLeftOval([-0.375, 7.657, -7.208])
         setRightOval([0.304, 7.612, -10.971])
+        setVienPosition([0,0,0]);
+        setBezierOval([-1.822, 7.935, -9.449]);
         actions['CircleAction.001'].stop();
         actions['NurbsPathAction'].stop();
         actions['Plane.001Action'].stop();
@@ -92,23 +108,34 @@
               const { clientX, clientY } = event;
               const x = (clientX - window.innerWidth / 2) / 100;
               const y = (clientY - window.innerHeight / 2) / 100;
-              setArmPosition([x + armPosition[0], y+ armPosition[1], armPosition[2]]);
+              setArmPosition([armPosition[0], armPosition[1] -y ,  armPosition[2] - x]);
               // console.log("arm position is: ", {armPosition})
             }
             if(isBezierSelected){
               const { clientX, clientY } = event;
               const x = (clientX - window.innerWidth / 2) / 100;
               const y = (clientY - window.innerHeight / 2) / 100;
-              setBezierPosition([x + bezierPosition[0], y+ bezierPosition[1], bezierPosition[2]]);
+              setBezierPosition([bezierPosition[0], bezierPosition[1] - y, bezierPosition[2] - x]);
             }
             if(isOvalSelected){
               const { clientX, clientY } = event;
               const x = (clientX - window.innerWidth / 2) / 100;
               const y = (clientY - window.innerHeight / 2) / 100;
-              setLeftOval([x+leftOval[0], y+leftOval[1], leftOval[2]]);
-              setRightOval([x+rightOval[0], y+rightOval[1], rightOval[2]]);
+              setLeftOval([leftOval[0], leftOval[1] - y, leftOval[2] - x]);
+              setRightOval([rightOval[0], rightOval[1]-y, rightOval[2]-x]);
             }
-            
+            if(isVienSelected){
+              const { clientX, clientY } = event;
+              const x = (clientX - window.innerWidth / 2) / 100;
+              const y = (clientY - window.innerHeight / 2) / 100;
+              setVienPosition([vienPosition[0], vienPosition[1] - y, vienPosition[2] - x]);
+            }
+            if(isBezierOvalSelected){
+              const { clientX, clientY } = event;
+              const x = (clientX - window.innerWidth / 2) / 100;
+              const y = (clientY - window.innerHeight / 2) / 100;
+              setBezierOval([bezierOval[0], bezierOval[1] - y, bezierOval[2] - x]);
+            }
         }
       };
 
@@ -119,7 +146,7 @@
           window.removeEventListener('mousemove', handleMouseMove);
           window.removeEventListener('mouseup', handleMouseUp);
         };
-      }, [isArmSelected, isBezierSelected, isOvalSelected]);
+      }, [isArmSelected, isBezierSelected, isOvalSelected, isBezierOvalSelected, isVienSelected]);
 
       useFrame(() => {
         if (isArmSelected) {
@@ -287,9 +314,9 @@
             </group>
 
             <group
-            name='viens total'
+            name='viens total' onClick={handleVienClick} 
             >
-            <group name="BezierCurve004_1">
+            <group name="BezierCurve004_1" position={vienPosition}>
               <skinnedMesh
                 name="BezierCurve004_primitive0"
                 geometry={nodes.BezierCurve004_primitive0.geometry}
@@ -322,13 +349,15 @@
               geometry={nodes.BezierCurve002.geometry}
               material={materials['__GLTFLoader._default']}
             />
+              
+            <group name='bezieroval' onClick={handleBezierOvalClick}  position={bezierOval}>
             <mesh
               name="BezierCurve005"
               geometry={nodes.BezierCurve005.geometry}
               material={materials['Material.001']}
-              position={[-1.822, 7.935, -9.449]}
               rotation={[-0.016, -0.199, -0.162]}
             />
+            </group>
             <mesh
               name="Plane"
               geometry={nodes.Plane.geometry}
