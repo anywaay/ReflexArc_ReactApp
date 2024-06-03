@@ -25,3 +25,4 @@ dist-ssr
 *.sw?
 test.jsx
 src/components/test.jsx
+src/components/test2.jsx

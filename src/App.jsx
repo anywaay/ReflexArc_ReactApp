@@ -8,24 +8,29 @@ import "./App.css";
 const App = () => {
   const ref = useRef();
   const [isAnimating, setIsAnimating] = useState(false);
+  const [isSliceClicked, setIsSliceClicked] = useState(false);
   const [armPosition, setArmPosition] = useState([-14.301, 7.398, 9.125]); 
   const [modelPosition, setModelPosition] = useState([0, 0.9, 0]);
   const [modelScale, setModelScale] = useState([3.5, 3.5, 3.5]);
   const [initialCameraTarget, setInitialCameraTarget] = useState([0, 0, 0]);
 
+  const handleSlice = ()=>{
+    setIsSliceClicked(true);
+  }
   const handleAnimate = () => {
     setIsAnimating(true);
   };
 
   const handleReset = () => {
     setArmPosition([-14.301, 7.398, 9.125]);
+    setModelPosition([0, 0.9, 0]);
     setIsAnimating(false);
+    setIsSliceClicked(false);
   };
 
   const handleClear = () => {
     setInitialCameraTarget([0, 20, 0]); 
     setArmPosition([-14.301, 7.398, 9.125]);
-    setModelPosition([0, 0.9, 0]);
     setIsAnimating(false);
   };
   
@@ -65,15 +70,17 @@ const App = () => {
             <Suspense fallback={null}>
               <directionalLight position={[1, 5, 1]} intensity={4.5}/>
               <ambientLight intensity={0.5} />
-              <ReflexArc position={modelPosition} scale={modelScale} arm={armPosition} isAnimating={isAnimating} />
+              <ReflexArc position={modelPosition} scale={modelScale} arm={armPosition} isAnimating={isAnimating}
+              isSliced={isSliceClicked} />
             </Suspense>
-            <OrbitControls ref={ref} target={initialCameraTarget} />
+            {/* <OrbitControls ref={ref} target={initialCameraTarget} /> */}
+            {!isSliceClicked && <OrbitControls ref={ref} target={initialCameraTarget} />}
           </Canvas>
         </ErrorBoundary>
       </div>
       <div className="buttons-container">
-        <button className="button">Update</button>
-        <button className="button" onClick={handleReset}>Reset Arm</button>
+        <button className="button" onClick={handleSlice}>Slice</button>
+        <button className="button" onClick={handleReset}>Reset</button>
         <button className="button" onClick={handleClear}>Clear</button>
         <button className="button" onClick={handleAnimate}>Animate</button>
       </div>

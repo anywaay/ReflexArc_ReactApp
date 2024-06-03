@@ -2,91 +2,124 @@
     import { useGLTF, useAnimations } from '@react-three/drei';
     import { a } from '@react-spring/three';
     import { useFrame } from '@react-three/fiber';
-  import { modelPosition } from 'three/examples/jsm/nodes/Nodes.js';
 
-    const ReflexArc = ({position, scale, arm, isAnimating}) => {
+    const ReflexArc = ({position, scale, arm, isAnimating, isSliced}) => {
       const group = useRef();
       const armatureRef = useRef();
+      const mouse = useRef([0, 0]);
       const { nodes, materials, animations } = useGLTF('reflexarc.glb');
       const { actions } = useAnimations(animations, group);
-      const [armPosition, setArmPosition] = useState([-14.301, 7.398, 9.125]);
-      const [isArmSelected, setIsArmSelected] = useState(false);
-      const mouse = useRef([0, 0]);
 
-      // useEffect(() => {
-      //   if (props.isAnimating) {
-      //     actions.ArmatureAction002.play();
-      //   }
-      // }, [props.isAnimating, actions]);
+      const [isArmSelected, setIsArmSelected] = useState(false);
+      const [isBezierSelected, setIsBezierSelected] = useState(false);
+      const [isOvalSelected, setIsOvalSelected] = useState(false);
+      const [armPosition, setArmPosition] = useState([-14.301, 7.398, 9.125]);
+      const [bezierPosition, setBezierPosition] =useState([-1.822, 7.935, -9.449]);
+      const [leftOval, setLeftOval] = useState([-0.375, 7.657, -7.208]);
+      const [rightOval, setRightOval] = useState([0.304, 7.612, -10.971]);
 
         useEffect(() => {
         if (isAnimating) {
-          actions.ArmatureAction.play();
+          actions['CircleAction.001'].play();
+          actions['NurbsPathAction'].play();
+          actions['Plane.001Action'].play();
+          actions['ArmatureAction'].play();
+          actions['ArmatureAction.001'].play();
+          actions['ArmatureAction.002'].play();
+          actions['BezierCurve.011Action'].play();
+          actions['Armature.003Action'].play();
+
           const timeoutId = setTimeout(() => {
-            actions.ArmatureAction.stop();
-          }, 7708);
+          // actions['ArmatureAction'].stop();
+          }, 1000);
           return () => clearTimeout(timeoutId);
         }
       }, [isAnimating, actions]);
 
+
+      const handleArmClick = () => {
+        console.log("arm selected ")
+        setIsArmSelected(true);
+      };
+      const handleBezierClick=()=>{
+        setIsBezierSelected(true);
+      }
+      const handleOvalClick=()=>{
+        setIsOvalSelected(true);
+      }
+
+      const handleMouseUp = ()=>{
+        setIsArmSelected(false);
+        setIsBezierSelected(false);
+        setIsOvalSelected(false);
+      }
+
+
       useEffect(() => {
         setArmPosition([-14.301, 7.398, 9.125]);
+        setBezierPosition([-1.822, 7.935, -9.449]);
+        setLeftOval([-0.375, 7.657, -7.208])
+        setRightOval([0.304, 7.612, -10.971])
+        actions['CircleAction.001'].stop();
+        actions['NurbsPathAction'].stop();
+        actions['Plane.001Action'].stop();
+        actions['ArmatureAction'].stop();
+        actions['ArmatureAction.001'].stop();
+        actions['ArmatureAction.002'].stop();
+        actions['BezierCurve.011Action'].stop();
+        actions['Armature.003Action'].stop();
       }, [position]);
 
       useEffect(() => {
         setArmPosition([-14.301, 7.398, 9.125]);
+        setBezierPosition([-1.822, 7.935, -9.449]);
+        setLeftOval([-0.375, 7.657, -7.208])
+        setRightOval([0.304, 7.612, -10.971])
+        actions['CircleAction.001'].stop();
+        actions['NurbsPathAction'].stop();
+        actions['Plane.001Action'].stop();
+        actions['ArmatureAction'].stop();
+        actions['ArmatureAction.001'].stop();
+        actions['ArmatureAction.002'].stop();
+        actions['BezierCurve.011Action'].stop();
+        actions['Armature.003Action'].stop();
       }, [arm]);
 
       const handleMouseMove = (event) => {
-        if (isArmSelected) {
-          const { clientX, clientY } = event;
-          mouse.current = [clientX - window.innerWidth / 2, clientY - window.innerHeight / 2];
-        }
-      };
-
-      const handleDoubleClick = () => {
-        setIsArmSelected(true);
-      };
-
-      const handleDocumentClick = (event) => {
-        const clickedElement = event.target;
-        if (clickedElement !== armatureRef.current) {
-          setIsArmSelected(false);
-        }
-      };
-
-      const handleKeyDown = (event) => {
-        const step = 0.1;
-        switch (event.key) {
-          case 'ArrowUp':
-            setArmPosition((prev) => [prev[0], prev[1] + step, prev[2]]);
-            break;
-          case 'ArrowLeft':
-            setArmPosition((prev) => [prev[0] , prev[1], prev[2]+ step]);
-            break;
-          case 'ArrowDown':
-            setArmPosition((prev) => [prev[0], prev[1] - step, prev[2]]);
-            break;
-          case 'ArrowRight':
-            setArmPosition((prev) => [prev[0] , prev[1], prev[2]- step]);
-            break;
-          default:
-            break;
+        if (isSliced) {
+            if(isArmSelected){
+              // console.log("now moving arm");
+              const { clientX, clientY } = event;
+              const x = (clientX - window.innerWidth / 2) / 100;
+              const y = (clientY - window.innerHeight / 2) / 100;
+              setArmPosition([x + armPosition[0], y+ armPosition[1], armPosition[2]]);
+              // console.log("arm position is: ", {armPosition})
+            }
+            if(isBezierSelected){
+              const { clientX, clientY } = event;
+              const x = (clientX - window.innerWidth / 2) / 100;
+              const y = (clientY - window.innerHeight / 2) / 100;
+              setBezierPosition([x + bezierPosition[0], y+ bezierPosition[1], bezierPosition[2]]);
+            }
+            if(isOvalSelected){
+              const { clientX, clientY } = event;
+              const x = (clientX - window.innerWidth / 2) / 100;
+              const y = (clientY - window.innerHeight / 2) / 100;
+              setLeftOval([x+leftOval[0], y+leftOval[1], leftOval[2]]);
+              setRightOval([x+rightOval[0], y+rightOval[1], rightOval[2]]);
+            }
+            
         }
       };
 
       useEffect(() => {
         window.addEventListener('mousemove', handleMouseMove);
-        window.addEventListener('dblclick', handleDoubleClick);
-        document.addEventListener('click', handleDocumentClick);
-        window.addEventListener('keydown', handleKeyDown);
+        window.addEventListener('mouseup', handleMouseUp);
         return () => {
           window.removeEventListener('mousemove', handleMouseMove);
-          window.removeEventListener('dblclick', handleDoubleClick);
-          document.removeEventListener('click', handleDocumentClick);
-          window.removeEventListener('keydown', handleKeyDown);
+          window.removeEventListener('mouseup', handleMouseUp);
         };
-      }, []);
+      }, [isArmSelected, isBezierSelected, isOvalSelected]);
 
       useFrame(() => {
         if (isArmSelected) {
@@ -106,16 +139,7 @@
       }, [armPosition]);
 
       
-      // useEffect(() => {
-      //   if (animations && animations.length > 0) {
-      //     console.log("Animations found:");
-      //     animations.forEach((animation, index) => {
-      //       console.log(`Animation ${index + 1}:`, animation);
-      //     });
-      //   } else {
-      //     console.log("No animations found.");
-      //   }
-      // }, [animations]);
+
 
       return (
         <a.group ref={group} scale={scale} position={position} dispose={null}>
@@ -159,10 +183,11 @@
                 position={[-14.588, 349.439, -1905.742]}
               />
             </group>
+            <group onClick={handleBezierClick}>
             <group name="BezierCurve" />
             <group
               name="BezierCurve001"
-              position={[-1.822, 7.935, -9.449]}
+              position={bezierPosition}
               rotation={[-0.016, -0.199, -0.162]}>
               <mesh
                 name="BezierCurve001_primitive0"
@@ -175,8 +200,10 @@
                 material={materials['Material.003']}
               />
             </group>
+            </group>
+            <group name='leftoval' onClick={handleOvalClick}>
             <group name="BezierCurve003" />
-            <group name="Cube001" position={[-0.375, 7.657, -7.208]} scale={0.163}>
+            <group name="Cube001" position={leftOval} scale={0.163}>
               <mesh
                 name="Cube001_primitive0"
                 geometry={nodes.Cube001_primitive0.geometry}
@@ -188,9 +215,11 @@
                 material={materials['Material.004']}
               />
             </group>
+            </group>
+            <group name='rightOval' onClick={handleOvalClick}>
             <group
               name="Cube002"
-              position={[0.304, 7.612, -10.971]}
+              position={rightOval}
               rotation={[0, 0, -Math.PI]}
               scale={-0.163}>
               <mesh
@@ -204,7 +233,10 @@
                 material={materials['Material.004']}
               />
             </group>
-            <group name="Armature" ref={armatureRef} position={armPosition}>
+            </group>
+            <group onClick={handleArmClick}    position={armPosition}>
+            <group name="Armature"  
+            >
               <group name="11535_arm_V3_" />
               <primitive object={nodes.Bone} />
               <group name="11535_arm_V3__1">
@@ -222,7 +254,10 @@
                 />
               </group>
             </group>
-            <group name="Armature001" position={[-14.301, 7.398, 9.125]}>
+            </group>
+            <group name="Armature001" onClick={handleArmClick}
+              position={[-14.301, 7.398, 9.125]}
+              >
               <group name="Cube" />
               <primitive object={nodes.Bone_1} />
               <skinnedMesh
@@ -232,7 +267,8 @@
                 skeleton={nodes.Cube_1.skeleton}
               />
             </group>
-            <group name="Armature002" position={[-14.301, 7.398, 9.125]}>
+            <group name="Armature002"  onClick={handleArmClick}
+            position={[-14.301, 7.398, 9.125]}>
               <group
                 name="Bone_2"
                 position={[13.448, -1.104, -15.335]}
@@ -249,6 +285,10 @@
               <primitive object={nodes.Bone_3} />
               <primitive object={nodes.neutral_bone} />
             </group>
+
+            <group
+            name='viens total'
+            >
             <group name="BezierCurve004_1">
               <skinnedMesh
                 name="BezierCurve004_primitive0"
@@ -262,6 +302,7 @@
                 material={materials['Material.004']}
                 skeleton={nodes.BezierCurve004_primitive1.skeleton}
               />
+            </group>
             </group>
             <mesh
               name="Cube003"
